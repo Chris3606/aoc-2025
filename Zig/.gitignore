@@ -1,4 +1,8 @@
-**/.zig-cache
-**/zig-out
-**/*.txt
+# Zig temp files
+.zig-cache/
+zig-out/
+build_runner.zig
+
+# Commit sample inputs, but not real inputs
+**/data/*.txt
 !**/*_sample.txt
