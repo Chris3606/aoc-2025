@@ -1,0 +1,7 @@
+.{
+    .fingerprint = 0x216a64e6559ce261,
+    .name = .zig_aoc_template,
+    .version = "0.15.2",
+    .dependencies = .{},
+    .paths = .{""},
+}
