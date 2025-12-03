@@ -1,45 +1,62 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
-const List = std.ArrayList;
-const Map = std.AutoHashMap;
-const StrMap = std.StringHashMap;
-const BitSet = std.DynamicBitSet;
 
 const util = @import("util.zig");
-const gpa = util.gpa;
 
 const data = @embedFile("data/day22.txt");
+const sample_data = @embedFile("data/day22_sample.txt");
 
-pub fn main() !void {
-    
+const InputType = [][]const u8;
+
+fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) !InputType {
+    _ = gpa;
+    _ = input_data;
+
+    return error.NotImplemented;
 }
 
-// Useful stdlib functions
-const tokenizeAny = std.mem.tokenizeAny;
-const tokenizeSeq = std.mem.tokenizeSequence;
-const tokenizeSca = std.mem.tokenizeScalar;
-const splitAny = std.mem.splitAny;
-const splitSeq = std.mem.splitSequence;
-const splitSca = std.mem.splitScalar;
-const indexOf = std.mem.indexOfScalar;
-const indexOfAny = std.mem.indexOfAny;
-const indexOfStr = std.mem.indexOfPosLinear;
-const lastIndexOf = std.mem.lastIndexOfScalar;
-const lastIndexOfAny = std.mem.lastIndexOfAny;
-const lastIndexOfStr = std.mem.lastIndexOfLinear;
-const trim = std.mem.trim;
-const sliceMin = std.mem.min;
-const sliceMax = std.mem.max;
+fn part1(gpa: std.mem.Allocator, input: InputType) !u64 {
+    _ = gpa;
+    _ = input;
+    var result: u64 = 0;
 
-const parseInt = std.fmt.parseInt;
-const parseFloat = std.fmt.parseFloat;
+    result += 0; // Get compiler to stop complaining about const
 
-const print = std.debug.print;
-const assert = std.debug.assert;
+    return result;
+}
 
-const sort = std.sort.block;
-const asc = std.sort.asc;
-const desc = std.sort.desc;
+fn part2(gpa: std.mem.Allocator, input: InputType) !u64 {
+    _ = gpa;
+    _ = input;
+    var result: u64 = 0;
+
+    result += 0; // Get compiler to stop complaining about const
+
+    return result;
+}
+
+pub fn main() !void {
+    defer {
+        const status = util.gpa_impl.deinit();
+        std.debug.assert(status != .leak);
+    }
+    const input = try parseInput(util.gpa, data);
+    defer util.gpa.free(input);
+
+    std.debug.print("Part 1: {d}\n", .{try part1(util.gpa, input)});
+    std.debug.print("Part 2: {d}\n", .{try part2(util.gpa, input)});
+}
+
+test "day22_part1" {
+    const input = try parseInput(std.testing.allocator, sample_data);
+    defer std.testing.allocator.free(input);
+    try std.testing.expectEqual(0, try part1(std.testing.allocator, input));
+}
+
+test "day22_part2" {
+    const input = try parseInput(std.testing.allocator, sample_data);
+    defer std.testing.allocator.free(input);
+    try std.testing.expectEqual(0, try part2(std.testing.allocator, input));
+}
 
 // Generated from template/template.zig.
 // Run `zig build generate` to update.
