@@ -18,11 +18,10 @@ fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) !InputType {
     return vec.toOwnedSlice(gpa) catch unreachable;
 }
 
-fn get_max_digit(line: []const u8, exclude_index: usize) usize {
+fn get_max_digit(line: []const u8) usize {
     var max: u8 = 0;
     var max_idx: usize = 0;
     for (line, 0..) |digit, idx| {
-        if (idx == exclude_index) continue;
         const numerical_value = digit - '1' + 1;
         if (numerical_value > max) {
             max = numerical_value;
@@ -33,29 +32,46 @@ fn get_max_digit(line: []const u8, exclude_index: usize) usize {
     return max_idx;
 }
 
-fn part1(input: InputType) !u32 {
-    var result: u32 = 0;
-    for (input) |line| {
-        // Find largest 10s place; it can't be the last because there would be no ones place
-        // so any number with a 10s place would be trivially larger
-        const tens = get_max_digit(line, line.len - 1);
+fn find_max_joltage(gpa: std.mem.Allocator, battery_bank: []const u8, num_batteries: u32) !u64 {
+    var digits: std.ArrayList(u8) = .empty;
+    defer digits.deinit(gpa);
 
-        // Biggest one after it is that digit
-        const remaining = line[tens + 1 ..];
-        const ones = get_max_digit(remaining, remaining.len);
+    var batteries_remaining = num_batteries;
+    var current_selection = battery_bank;
+    while (batteries_remaining > 0) : (batteries_remaining -= 1) {
+        // Find largest digits, left to right (so highest place value to lowest).  We must restrict
+        // each selection to only the digits which leave at least batteries_remaining digits after; otherwise,
+        // we'd be missing a digit somewhere down the road. By definition, this would left-pad the resulting number
+        // with 0's, which MUST be a lowest number than any number with all of the digits non-zero.
+        const max_digit_idx = get_max_digit(
+            current_selection[0 .. current_selection.len - batteries_remaining + 1],
+        );
+        try digits.append(gpa, current_selection[max_digit_idx]);
 
-        const digits = [2]u8{ line[tens], remaining[ones] };
-        result += try std.fmt.parseInt(u8, &digits, 10);
+        // The next digits must come _after_ the one we just selected, since we can't re-order.
+        current_selection = current_selection[max_digit_idx + 1 ..];
+    }
+
+    return try std.fmt.parseInt(u64, digits.items, 10);
+}
+
+fn sum_max_joltage(gpa: std.mem.Allocator, battery_banks: []const []const u8, num_batteries_per_bank: u32) !u64 {
+    var result: u64 = 0;
+    for (battery_banks) |line| {
+        result += try find_max_joltage(gpa, line, num_batteries_per_bank);
     }
 
     return result;
 }
 
-fn part2(input: InputType) !u32 {
-    _ = input;
-
-    return 0;
+fn part1(gpa: std.mem.Allocator, input: InputType) !u64 {
+    return try sum_max_joltage(gpa, input, 2);
 }
+
+fn part2(gpa: std.mem.Allocator, input: InputType) !u64 {
+    return try sum_max_joltage(gpa, input, 12);
+}
+
 pub fn main() !void {
     defer {
         const status = util.gpa_impl.deinit();
@@ -64,14 +80,20 @@ pub fn main() !void {
     const input = try parseInput(util.gpa, data);
     defer util.gpa.free(input);
 
-    std.debug.print("Part 1: {d}\n", .{try part1(input)});
-    std.debug.print("Part 2: {d}\n", .{try part2(input)});
+    std.debug.print("Part 1: {d}\n", .{try part1(util.gpa, input)});
+    std.debug.print("Part 2: {d}\n", .{try part2(util.gpa, input)});
 }
 
 test "day3_part1" {
     const input = try parseInput(std.testing.allocator, sample_data);
     defer std.testing.allocator.free(input);
-    try std.testing.expectEqual(357, try part1(input));
+    try std.testing.expectEqual(357, try part1(std.testing.allocator, input));
+}
+
+test "day3_part2" {
+    const input = try parseInput(std.testing.allocator, sample_data);
+    defer std.testing.allocator.free(input);
+    try std.testing.expectEqual(3121910778619, try part2(std.testing.allocator, input));
 }
 
 // Generated from template/template.zig.
