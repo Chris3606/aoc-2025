@@ -10,7 +10,7 @@ fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) !InputType {
     var vec: InputType = .empty;
     errdefer vec.deinit(gpa);
 
-    var input_it = util.getLines(input_data);
+    var input_it = util.tokenizeLines(input_data);
     while (input_it.next()) |line| {
         try vec.append(
             gpa,

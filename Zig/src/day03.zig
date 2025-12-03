@@ -4,19 +4,9 @@ const util = @import("util.zig");
 const data = @embedFile("data/day03.txt");
 const sample_data = @embedFile("data/day03_sample.txt");
 
-const InputType = [][]const u8;
+const InputType = []const []const u8;
 
-fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) !InputType {
-    var vec: std.ArrayList([]const u8) = .empty;
-    defer vec.deinit(gpa);
-
-    var it = util.getLines(input_data);
-    while (it.next()) |line| {
-        try vec.append(gpa, line);
-    }
-
-    return vec.toOwnedSlice(gpa) catch unreachable;
-}
+const parseInput = util.parseLines;
 
 fn get_max_digit(line: []const u8) usize {
     var max: u8 = 0;

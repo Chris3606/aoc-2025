@@ -5,44 +5,11 @@ const util = @import("util.zig");
 const sample_data = @embedFile("data/day02_sample.txt");
 const data = @embedFile("data/day02.txt");
 
-const ParsingError = error{InvalidData};
+const InputType = []const util.Range;
 
-const Range = struct {
-    const Self = @This();
+const parseInput = util.parseRangeList;
 
-    /// Inclusive
-    begin: i64,
-    /// Exclusive
-    end: i64,
-
-    /// Initializes from data in format [min]-[max] (where max is inclusive)
-    pub fn initFromSerialized(string: []const u8) !Self {
-        var it = std.mem.tokenizeScalar(u8, string, '-');
-        const min = try (it.next() orelse ParsingError.InvalidData);
-        const max = try (it.next() orelse ParsingError.InvalidData);
-
-        return Self{
-            .begin = try std.fmt.parseInt(i64, min, 10),
-            .end = try std.fmt.parseInt(i64, max, 10) + 1,
-        };
-    }
-};
-
-const InputType = []Range;
-
-fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) ![]Range {
-    var vec: std.ArrayList(Range) = .empty;
-    defer vec.deinit(gpa);
-
-    var it = std.mem.tokenizeScalar(u8, input_data, ',');
-    while (it.next()) |range_data| {
-        try vec.append(gpa, try Range.initFromSerialized(range_data));
-    }
-
-    return vec.toOwnedSlice(gpa) catch unreachable;
-}
-
-fn part1(input: []const Range) !u64 {
+fn part1(input: InputType) !u64 {
     var result: u64 = 0;
     var int_buf: [20]u8 = undefined;
 
@@ -63,7 +30,7 @@ fn part1(input: []const Range) !u64 {
     return result;
 }
 
-fn part2(input: []const Range) !u64 {
+fn part2(input: InputType) !u64 {
     var result: u64 = 0;
     var int_buf: [20]u8 = undefined;
 
