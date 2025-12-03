@@ -74,7 +74,7 @@ pub fn main() !void {
     defer input.deinit(util.gpa);
 
     std.debug.print("Part 1: {d}\n", .{try part1(input)});
-    std.debug.print("Part 1: {d}\n", .{try part2(input)});
+    std.debug.print("Part 2: {d}\n", .{try part2(input)});
 }
 
 // Generated from template/template.zig.
