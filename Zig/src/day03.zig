@@ -8,20 +8,6 @@ const InputType = []const []const u8;
 
 const parseInput = util.parseLines;
 
-fn get_max_digit(line: []const u8) usize {
-    var max: u8 = 0;
-    var max_idx: usize = 0;
-    for (line, 0..) |digit, idx| {
-        const numerical_value = digit - '1' + 1;
-        if (numerical_value > max) {
-            max = numerical_value;
-            max_idx = idx;
-        }
-    }
-
-    return max_idx;
-}
-
 fn find_max_joltage(gpa: std.mem.Allocator, battery_bank: []const u8, num_batteries: u32) !u64 {
     var digits: std.ArrayList(u8) = .empty;
     defer digits.deinit(gpa);
@@ -33,7 +19,8 @@ fn find_max_joltage(gpa: std.mem.Allocator, battery_bank: []const u8, num_batter
         // each selection to only the digits which leave at least batteries_remaining digits after; otherwise,
         // we'd be missing a digit somewhere down the road. By definition, this would left-pad the resulting number
         // with 0's, which MUST be a lowest number than any number with all of the digits non-zero.
-        const max_digit_idx = get_max_digit(
+        const max_digit_idx = std.mem.indexOfMax(
+            u8,
             current_selection[0 .. current_selection.len - batteries_remaining + 1],
         );
         try digits.append(gpa, current_selection[max_digit_idx]);
