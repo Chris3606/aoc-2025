@@ -1,6 +1,6 @@
 const std = @import("std");
 
-var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
+pub var gpa_impl = std.heap.GeneralPurposeAllocator(.{}){};
 pub const gpa = gpa_impl.allocator();
 
 /// Wraps a number around as if by modulo, but works for negative numbers.

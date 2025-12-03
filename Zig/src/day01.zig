@@ -66,7 +66,12 @@ fn part2(input: InputType) !u32 {
 }
 
 pub fn main() !void {
-    const input = try parseInput(util.gpa, data);
+    defer {
+        const status = util.gpa_impl.deinit();
+        std.debug.assert(status != .leak);
+    }
+    var input = try parseInput(util.gpa, data);
+    defer input.deinit(util.gpa);
 
     std.debug.print("Part 1: {d}\n", .{try part1(input)});
     std.debug.print("Part 1: {d}\n", .{try part2(input)});
