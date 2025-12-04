@@ -3,33 +3,55 @@ const std = @import("std");
 const util = @import("util.zig");
 
 const data = @embedFile("data/day01.txt");
-const InputType = std.ArrayList(struct { i8, i32 });
+const sample_data = @embedFile("data/day01_sample.txt");
+
+const Instruction = union(enum) {
+    const Self = @This();
+
+    left: i32,
+    right: i32,
+
+    pub fn initFromSerialized(string: []const u8) !Self {
+        if (string.len < 2) {
+            return util.ParsingError.InvalidData;
+        }
+
+        const value = try std.fmt.parseInt(i32, string[1..], 10);
+        return switch (string[0]) {
+            'L' => Self{ .left = value },
+            'R' => Self{ .right = value },
+            else => util.ParsingError.InvalidData,
+        };
+    }
+
+    pub fn shifts(self: Self) i32 {
+        return switch (self) {
+            .left => |val| -val,
+            .right => |val| val,
+        };
+    }
+};
+
+const InputType = []const Instruction;
 const max_number = 99;
 
 fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) !InputType {
-    var vec: InputType = .empty;
-    errdefer vec.deinit(gpa);
+    var vec: std.ArrayList(Instruction) = .empty;
+    defer vec.deinit(gpa);
 
     var input_it = util.tokenizeLines(input_data);
     while (input_it.next()) |line| {
-        try vec.append(
-            gpa,
-            .{
-                if (line[0] == 'L') -1 else 1,
-                try std.fmt.parseInt(i32, line[1..], 10),
-            },
-        );
+        try vec.append(gpa, try Instruction.initFromSerialized(line));
     }
 
-    return vec;
+    return vec.toOwnedSlice(gpa) catch unreachable;
 }
 
 fn part1(input: InputType) !u32 {
     var current_value: i32 = 50;
     var times_landed_on_zero: u32 = 0;
-    for (input.items) |instruction| {
-        const shifts = instruction[1] * instruction[0];
-        current_value = util.wrapAround(current_value + shifts, max_number + 1);
+    for (input) |instruction| {
+        current_value = @mod(current_value + instruction.shifts(), max_number + 1);
         if (current_value == 0) {
             times_landed_on_zero += 1;
         }
@@ -40,15 +62,15 @@ fn part1(input: InputType) !u32 {
 fn part2(input: InputType) !u32 {
     var current_value: i32 = 50;
     var times_passed_zero: u32 = 0;
-    for (input.items) |instruction| {
-        const shifts = instruction[1] * instruction[0];
+    for (input) |instruction| {
+        const shifts = instruction.shifts();
 
         // Count full wraps
         times_passed_zero += @divTrunc(@abs(shifts), max_number + 1);
 
         // Update value
         const old_current = current_value;
-        current_value = util.wrapAround(current_value + shifts, max_number + 1);
+        current_value = @mod(current_value + shifts, max_number + 1);
 
         // Find if we passed zero in a partial wrap; if we're on 0, that's captured later
         if (old_current != 0 and current_value != 0) {
@@ -70,11 +92,25 @@ pub fn main() !void {
         const status = util.gpa_impl.deinit();
         std.debug.assert(status != .leak);
     }
-    var input = try parseInput(util.gpa, data);
-    defer input.deinit(util.gpa);
+    const input = try parseInput(util.gpa, data);
+    defer util.gpa.free(input);
 
     std.debug.print("Part 1: {d}\n", .{try part1(input)});
     std.debug.print("Part 2: {d}\n", .{try part2(input)});
+}
+
+test "day1_part1" {
+    const input = try parseInput(std.testing.allocator, sample_data);
+    defer std.testing.allocator.free(input);
+
+    try std.testing.expectEqual(3, try part1(input));
+}
+
+test "day1_part2" {
+    const input = try parseInput(std.testing.allocator, sample_data);
+    defer std.testing.allocator.free(input);
+
+    try std.testing.expectEqual(6, try part2(input));
 }
 
 // Generated from template/template.zig.
