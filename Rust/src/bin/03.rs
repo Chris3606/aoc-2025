@@ -46,8 +46,9 @@ pub fn part_one(input: &str) -> Option<u64> {
     let input: Vec<_> = input.lines().collect();
     let result = input
         .into_iter()
-        .map(|bank| find_max_joltage(bank, 2).unwrap()) // TODO: Get rid of panic, return None instead
-        .sum();
+        .map(|bank| find_max_joltage(bank, 2))
+        .sum::<Result<u64, ParseError>>()
+        .ok()?;
 
     Some(result)
 }
@@ -56,8 +57,9 @@ pub fn part_two(input: &str) -> Option<u64> {
     let input: Vec<_> = input.lines().collect();
     let result = input
         .into_iter()
-        .map(|bank| find_max_joltage(bank, 12).unwrap()) // TODO: Get rid of panic, return None instead
-        .sum();
+        .map(|bank| find_max_joltage(bank, 12))
+        .sum::<Result<u64, ParseError>>()
+        .ok()?;
 
     Some(result)
 }
