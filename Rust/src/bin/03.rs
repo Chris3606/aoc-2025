@@ -47,7 +47,7 @@ pub fn part_one(input: &str) -> Option<u64> {
     let result = input
         .into_iter()
         .map(|bank| find_max_joltage(bank, 2))
-        .sum::<Result<u64, ParseError>>()
+        .sum::<Result<_, _>>()
         .ok()?;
 
     Some(result)
@@ -58,7 +58,7 @@ pub fn part_two(input: &str) -> Option<u64> {
     let result = input
         .into_iter()
         .map(|bank| find_max_joltage(bank, 12))
-        .sum::<Result<u64, ParseError>>()
+        .sum::<Result<_, _>>()
         .ok()?;
 
     Some(result)
