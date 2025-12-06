@@ -6,6 +6,7 @@ use std::str::FromStr;
 // Use this file to add helper functions and additional modules.
 
 /// Errors commonly returned from parsing functions to indicate bad input.
+#[derive(Debug, Clone, Copy)]
 pub enum ParseError {
     InvalidInput,
 }
