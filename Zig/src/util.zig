@@ -25,39 +25,52 @@ pub fn parseLines(alloc: std.mem.Allocator, input_data: []const u8) ![][]const u
 /// Represents an error that occurs during parsing.
 pub const ParsingError = error{InvalidData};
 
-/// A structure representing a range starting and ending at the given values.  The end is exclusive,
-/// while the beginning is inclusive.
+/// A structure representing a range starting and ending at the given values, inclusive.
 pub const Range = struct {
     const Self = @This();
 
-    /// Inclusive
     begin: i64,
-    /// Exclusive
     end: i64,
 
-    /// Initializes from data in format [min]-[max] (where max is inclusive)
+    /// Initializes from data in format [min]-[max] (where min and max are inclusive)
     pub fn initFromSerialized(string: []const u8) !Self {
         var it = std.mem.tokenizeScalar(u8, string, '-');
         const min_data = try (it.next() orelse ParsingError.InvalidData);
         const max_data = try (it.next() orelse ParsingError.InvalidData);
         const min = try std.fmt.parseInt(i64, min_data, 10);
-        const max = try std.fmt.parseInt(i64, max_data, 10) + 1;
+        const max = try std.fmt.parseInt(i64, max_data, 10);
 
-        if (max <= min) return ParsingError.InvalidData;
+        if (max < min) return ParsingError.InvalidData;
 
         return Self{
             .begin = min,
             .end = max,
         };
     }
+
+    pub fn containsValue(self: Self, value: i64) bool {
+        return (value >= self.begin and value <= self.end);
+    }
+
+    pub fn contains(self: Self, other: Range) bool {
+        return other.begin >= self.begin and other.end <= self.end;
+    }
+
+    pub fn overlaps(self: Self, other: Range) bool {
+        return self.containsValue(other.begin) or self.containsValue(other.end);
+    }
+
+    pub fn numValues(self: Self) u64 {
+        return @intCast(self.end - self.begin + 1);
+    }
 };
 
-/// Parses a list of range in the format [min]-[max],[min]-max,...
-pub fn parseRangeList(alloc: std.mem.Allocator, input_data: []const u8) ![]Range {
+/// Parses a list of range in the format [min]-[max][delim][min]-[max],...
+pub fn parseRangeList(alloc: std.mem.Allocator, input_data: []const u8, delim: u8) ![]Range {
     var vec: std.ArrayList(Range) = .empty;
     defer vec.deinit(alloc);
 
-    var it = std.mem.tokenizeScalar(u8, input_data, ',');
+    var it = std.mem.tokenizeScalar(u8, input_data, delim);
     while (it.next()) |range_data| {
         try vec.append(alloc, try Range.initFromSerialized(range_data));
     }
@@ -636,16 +649,16 @@ pub fn parseSliceViewFromCharGrid(allocator: std.mem.Allocator, data: []const u8
     ));
 }
 
-// /// Parses a list of integers using the specified values as the delimiters to tokenize on.
-// pub fn parseIntList(comptime TInt: type, allocator: std.mem.Allocator, data: []const u8, delimeter_bytes: []const u8) !List(TInt) {
-//     var list = List(TInt).init(allocator);
-//     errdefer list.deinit();
+/// Parses a list of integers using the specified value as the delimiter to tokenize on.
+pub fn parseIntList(comptime TInt: type, allocator: std.mem.Allocator, data: []const u8, delimeter: u8) ![]TInt {
+    var list: std.ArrayList(TInt) = .empty;
+    errdefer list.deinit(allocator);
 
-//     var item_it = tokenize(u8, data, delimeter_bytes);
-//     while (item_it.next()) |item| {
-//         const num = try parseInt(TInt, item, 10);
-//         try list.append(allocator, num);
-//     }
+    var item_it = std.mem.tokenizeScalar(u8, data, delimeter);
+    while (item_it.next()) |item| {
+        const num = try std.fmt.parseInt(TInt, item, 10);
+        try list.append(allocator, num);
+    }
 
-//     return list;
-// }
+    return list.toOwnedSlice(allocator) catch unreachable;
+}

@@ -15,7 +15,7 @@ fn part1(input: InputType) !u64 {
 
     for (input) |range| {
         var num: i64 = range.begin;
-        while (num < range.end) : (num += 1) {
+        while (num <= range.end) : (num += 1) {
             const num_string = try std.fmt.bufPrint(&int_buf, "{d}", .{num});
             if (num_string.len % 2 != 0) {
                 continue;
@@ -36,7 +36,7 @@ fn part2(input: InputType) !u64 {
 
     for (input) |range| {
         var num: i64 = range.begin;
-        outer: while (num < range.end) : (num += 1) {
+        outer: while (num <= range.end) : (num += 1) {
             const num_string = try std.fmt.bufPrint(&int_buf, "{d}", .{num});
 
             var step: u32 = 1;
@@ -71,7 +71,7 @@ pub fn main() !void {
         const status = util.gpa_impl.deinit();
         std.debug.assert(status != .leak);
     }
-    const input = try parseInput(util.gpa, data);
+    const input = try parseInput(util.gpa, data, ',');
     defer util.gpa.free(input);
 
     std.debug.print("Part 1: {d}\n", .{try part1(input)});
@@ -79,14 +79,14 @@ pub fn main() !void {
 }
 
 test "day2_part1" {
-    const input = try parseInput(std.testing.allocator, sample_data);
+    const input = try parseInput(std.testing.allocator, sample_data, ',');
     defer std.testing.allocator.free(input);
 
     try std.testing.expectEqual(1227775554, try part1(input));
 }
 
 test "day2_part2" {
-    const input = try parseInput(std.testing.allocator, sample_data);
+    const input = try parseInput(std.testing.allocator, sample_data, ',');
     defer std.testing.allocator.free(input);
 
     try std.testing.expectEqual(4174379265, try part2(input));
