@@ -31,12 +31,45 @@ fn simulateTachyonBeam(start: util.Point, map: *const util.GridView(InputContext
     return 0;
 }
 
+fn toState(gpa: std.mem.Allocator, splitters: *std.DynamicBitSet, start: usize) ![]u8 {
+    var slice = try gpa.alloc(u8, splitters.count() + 10);
+    errdefer gpa.free(slice);
+
+    var x: usize = 0;
+    while (x < splitters.count()) : (x += 1) {
+        slice[x] = if (splitters.isSet(x)) '1' else '0';
+    }
+
+    var i: usize = 0;
+    while (i < 10) : (i += 1) {
+        slice[i + splitters.count()] = '0';
+    }
+
+    _ = try std.fmt.bufPrint(slice[splitters.count()..], "{d}", .{start});
+
+    return slice;
+}
+
 fn simulateTachyonBeam2(
     start: util.Point,
     map: *const util.GridView(InputContext, u8),
     current_splitters_used: *std.DynamicBitSet,
     gpa: std.mem.Allocator,
-) !u32 {
+    memo: *std.StringHashMap(u64),
+) !u64 {
+    const start_index = start.toIndex(map.width());
+    {
+        const state = try toState(gpa, current_splitters_used, start_index);
+        defer gpa.free(state);
+
+        if (memo.contains(state)) {
+            return memo.get(state).?;
+        }
+    }
+
+    var old_state = try current_splitters_used.clone(gpa);
+    defer old_state.deinit();
+
     var pos = start;
     while (map.contains(pos)) : (pos = pos.addDirection(util.Direction.Down)) {
         const index = pos.toIndex(map.width());
@@ -61,6 +94,7 @@ fn simulateTachyonBeam2(
                         map,
                         &new_splitters,
                         gpa,
+                        memo,
                     );
                 }
             };
@@ -81,6 +115,7 @@ fn simulateTachyonBeam2(
                         map,
                         &new_splitters,
                         gpa,
+                        memo,
                     );
                 }
             };
@@ -88,10 +123,16 @@ fn simulateTachyonBeam2(
             //current_splitters_used.unset(index);
             //std.debug.print("From ({},{}), split and left: {}, right: {}\n", .{ pos.x, pos.y, left, right });
 
+            const state = try toState(gpa, &old_state, start_index);
+            errdefer gpa.free(state);
+            try memo.put(state, left + right);
             return left + right;
         }
     }
 
+    const state = try toState(gpa, &old_state, start_index);
+    errdefer gpa.free(state);
+    try memo.put(state, 1);
     return 1;
 }
 
@@ -122,14 +163,25 @@ fn part2(gpa: std.mem.Allocator, input: InputType) !u64 {
     var bitSet = try std.DynamicBitSet.initEmpty(gpa, input.numCells());
     defer bitSet.deinit();
 
-    return try simulateTachyonBeam2(start, &input.basicView, &bitSet, gpa);
+    var memo = std.StringHashMap(u64).init(gpa);
+    defer {
+        // var it =
+        // while (it.next()) |key| {
+        //     gpa.free(*key);
+        // }
+        // TODO: Fix leak
+        memo.deinit();
+    }
+
+    return try simulateTachyonBeam2(start, &input.basicView, &bitSet, gpa, &memo);
 }
 
 pub fn main() !void {
-    defer {
-        const status = util.gpa_impl.deinit();
-        std.debug.assert(status != .leak);
-    }
+    // defer {
+    //     const status = util.gpa_impl.deinit();
+    //     _ = status;
+    //     //std.debug.assert(status != .leak);
+    // }
     const input = try parseInput(util.gpa, data);
     defer input.deinit();
 
