@@ -165,11 +165,10 @@ fn part2(gpa: std.mem.Allocator, input: InputType) !u64 {
 
     var memo = std.StringHashMap(u64).init(gpa);
     defer {
-        // var it =
-        // while (it.next()) |key| {
-        //     gpa.free(*key);
-        // }
-        // TODO: Fix leak
+        var it = memo.keyIterator();
+        while (it.next()) |key| {
+            gpa.free(key.*);
+        }
         memo.deinit();
     }
 
@@ -177,11 +176,10 @@ fn part2(gpa: std.mem.Allocator, input: InputType) !u64 {
 }
 
 pub fn main() !void {
-    // defer {
-    //     const status = util.gpa_impl.deinit();
-    //     _ = status;
-    //     //std.debug.assert(status != .leak);
-    // }
+    defer {
+        const status = util.gpa_impl.deinit();
+        std.debug.assert(status != .leak);
+    }
     const input = try parseInput(util.gpa, data);
     defer input.deinit();
 
