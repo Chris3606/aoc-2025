@@ -5,21 +5,38 @@ const util = @import("util.zig");
 const data = @embedFile("data/day09.txt");
 const sample_data = @embedFile("data/day09_sample.txt");
 
-const InputType = [][]const u8;
+const InputType = []util.Point;
 
 fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) !InputType {
-    _ = gpa;
-    _ = input_data;
+    var it = util.tokenizeLines(input_data);
+    var list: std.ArrayList(util.Point) = .empty;
+    defer list.deinit(gpa);
 
-    return error.NotImplemented;
+    while (it.next()) |line| {
+        var parts = std.mem.tokenizeScalar(u8, line, ',');
+
+        const x_data = parts.next() orelse return util.ParsingError.InvalidData;
+        const y_data = parts.next() orelse return util.ParsingError.InvalidData;
+        try list.append(gpa, util.Point{
+            .x = try std.fmt.parseInt(i32, x_data, 10),
+            .y = try std.fmt.parseInt(i32, y_data, 10),
+        });
+    }
+    return list.toOwnedSlice(gpa) catch unreachable;
 }
 
 fn part1(gpa: std.mem.Allocator, input: InputType) !u64 {
     _ = gpa;
-    _ = input;
     var result: u64 = 0;
 
-    result += 0; // Get compiler to stop complaining about const
+    for (input, 0..) |p1, idx| {
+        var j: usize = idx + 1;
+        while (j < input.len) : (j += 1) {
+            const p2 = input[j];
+            const area = (@as(u64, @abs(p2.x - p1.x)) + 1) * (@as(u64, @abs(p2.y - p1.y)) + 1);
+            result = @max(result, area);
+        }
+    }
 
     return result;
 }
@@ -49,7 +66,7 @@ pub fn main() !void {
 test "day09_part1" {
     const input = try parseInput(std.testing.allocator, sample_data);
     defer std.testing.allocator.free(input);
-    try std.testing.expectEqual(0, try part1(std.testing.allocator, input));
+    try std.testing.expectEqual(50, try part1(std.testing.allocator, input));
 }
 
 test "day09_part2" {
