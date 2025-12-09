@@ -5,19 +5,81 @@ const util = @import("util.zig");
 const data = @embedFile("data/day08.txt");
 const sample_data = @embedFile("data/day08_sample.txt");
 
-const InputType = [][]const u8;
+const InputType = []util.Point3d;
 
 fn parseInput(gpa: std.mem.Allocator, input_data: []const u8) !InputType {
-    _ = gpa;
-    _ = input_data;
+    var vec: std.ArrayList(util.Point3d) = .empty;
+    defer vec.deinit(gpa);
 
-    return error.NotImplemented;
+    var input_it = util.tokenizeLines(input_data);
+    while (input_it.next()) |line| {
+        try vec.append(gpa, try util.Point3d.initFromSerialized(line));
+    }
+
+    return vec.toOwnedSlice(gpa) catch unreachable;
+}
+
+const PointPair = struct {
+    p1: util.Point3d,
+    p2: util.Point3d,
+    dist: f64,
+};
+
+fn pointPairSorter(_: void, a: PointPair, b: PointPair) bool {
+    return a.dist < b.dist;
 }
 
 fn part1(gpa: std.mem.Allocator, input: InputType) !u64 {
-    _ = gpa;
-    _ = input;
     var result: u64 = 0;
+
+    for (input) |pos| {
+        std.debug.print("{},{},{}\n", .{ pos.x, pos.y, pos.z });
+    }
+
+    var xBound: u32 = 0;
+    var yBound: u32 = 0;
+    var zBound: u32 = 0;
+
+    for (input) |pos| {
+        xBound = @max(xBound, pos.x);
+        yBound = @max(yBound, pos.x);
+        zBound = @max(zBound, pos.x);
+    }
+
+    var pairs: std.ArrayList(PointPair) = .empty;
+    defer pairs.deinit(gpa);
+
+    for (input, 0..) |pos, idx| {
+        for (input[idx..]) |pos2| {
+            try pairs.append(gpa, PointPair{
+                .p1 = pos,
+                .p2 = pos2,
+                .dist = pos.straight_line_dist(&pos2),
+            });
+        }
+    }
+
+    std.mem.sort(PointPair, pairs.items, {}, pointPairSorter);
+
+    var sets: std.ArrayList(std.DynamicBitSet) = .empty;
+    defer {
+        for (sets.items) |*set| {
+            set.deinit();
+        }
+        sets.deinit(gpa);
+    }
+
+    var s = try std.DynamicBitSet.initEmpty(xBound * yBound * zBound);
+
+    var processed_pairs: usize = 0;
+    for (pairs.items) |pair| {
+
+        // Break after x connections
+        processed_pairs += 1;
+        if (processed_pairs == 10) {
+            break;
+        }
+    }
 
     result += 0; // Get compiler to stop complaining about const
 

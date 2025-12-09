@@ -78,6 +78,45 @@ pub fn parseRangeList(alloc: std.mem.Allocator, input_data: []const u8, delim: u
     return vec.toOwnedSlice(alloc) catch unreachable;
 }
 
+/// Represents a 3D integral point.  Provides mathematical helper functions.
+pub const Point3d = struct {
+    const Self = @This();
+
+    /// X-coordinate of the point.
+    x: i32,
+    /// Y-coordinate of the point.
+    y: i32,
+    /// Z-coordinate of the point.
+    z: i32,
+
+    pub fn initFromSerialized(data: []const u8) !Self {
+        var it = std.mem.tokenizeScalar(u8, data, ',');
+        const x = try std.fmt.parseInt(i32, it.next() orelse return ParsingError.InvalidData, 10);
+        const y = try std.fmt.parseInt(i32, it.next() orelse return ParsingError.InvalidData, 10);
+        const z = try std.fmt.parseInt(i32, it.next() orelse return ParsingError.InvalidData, 10);
+
+        return Self{ .x = x, .y = y, .z = z };
+    }
+
+    pub fn straight_line_dist(self: *const Self, other: *const Self) f64 {
+        const x: f64 = @floatFromInt(@abs(other.x - self.x));
+        const y: f64 = @floatFromInt(@abs(other.y - self.y));
+        const z: f64 = @floatFromInt(@abs(other.z - self.z));
+
+        return std.math.sqrt(x * x + y * y + z * z);
+    }
+
+    /// Converts the point to a 1D index, assuming the given width.
+    pub fn toIndex(self: Self, width: u32, height: u32) usize {
+        return xyToIndex(self.x, self.y, width, height);
+    }
+
+    /// Converts the given coordinates to a 1D index, assuming the given width.
+    pub fn xyToIndex(x: i32, y: i32, z: i32, width: u32, height: u32) usize {
+        return @as(usize, @intCast(z)) * (width * height) + @as(usize, @intCast(y)) * width + @as(usize, @intCast(x));
+    }
+};
+
 /// Represents a 2D integral point.  Provides mathematical helper functions.
 pub const Point = struct {
     const Self = @This();
