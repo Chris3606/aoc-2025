@@ -68,7 +68,7 @@ public sealed class Day12 : BaseDay
         return new(areas.ToString());
     }
 
-    public override ValueTask<string> Solve_2() => throw new NotImplementedException();
+    public override ValueTask<string> Solve_2() => new ("Merry Christmas!");
 
     private static int CountHashes(IGridView<char> grid)
         => grid.Positions().Select(i => grid[i]).Count(i => i == '#');
