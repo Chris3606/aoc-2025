@@ -1,0 +1,32 @@
+# Start with style defaults from Google style
+BasedOnStyle: Google
+
+# CPP language
+Language: Cpp
+
+# 4 spaces per indent
+IndentWidth: 4
+
+# Allow access modifiers and namespaces to use our indent width, rather than Google's default
+IndentAccessModifiers: true
+NamespaceIndentation: All
+
+# Braces on their own line
+BreakBeforeBraces: Allman
+
+# Increase column limit; this isn't 1980
+ColumnLimit: 120
+
+# Make sure that if formatting splits function arguments/parameters, that they're 1 per line
+BinPackArguments: false
+BinPackParameters: false
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+
+# Single-lining of various blocks
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+# New-line between definition blocks
+SeparateDefinitionBlocks: Always

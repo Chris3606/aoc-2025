@@ -1,0 +1,5 @@
+**/build/
+
+**/inputs/*.txt
+!**/inputs/*_sample.txt
+**/.mypy_cache
