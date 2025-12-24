@@ -9,6 +9,11 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-cl",
         "CMAKE_CXX_COMPILER": "clang-cl"
+      },
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-clang-x64"
+        }
       }
     },
     {
@@ -33,7 +38,11 @@
       "name": "Clang Debug",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
-      "inherits": ["common-clang", "common-debug"]
+      "inherits": [ "common-clang", "common-debug" ],
+      "cacheVariables": {
+        "CMAKE_C_CLANG_TIDY": "",
+        "CMAKE_CXX_CLANG_TIDY": ""
+      }
     },
     {
       "name": "Clang Debug With Analyzers",

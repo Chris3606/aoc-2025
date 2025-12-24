@@ -11,17 +11,17 @@ namespace aoc
     {
     }
 
-    Day00::InputType Day00::parse_input([[maybe_unused]] std::ifstream& input_file)
+    Day00::InputType Day00::ParseInput([[maybe_unused]] std::istream& input_file)
     {
         throw std::runtime_error("Input parsing not yet implemented.");
     }
 
-    Day00::Solution1Type Day00::part1([[maybe_unused]] const InputType& input)
+    Day00::Solution1Type Day00::Part1([[maybe_unused]] const InputType& input)
     {
         return "Not yet solved.";
     }
 
-    Day00::Solution2Type Day00::part2([[maybe_unused]] const InputType& input)
+    Day00::Solution2Type Day00::Part2([[maybe_unused]] const InputType& input)
     {
         return "Not yet solved.";
     }

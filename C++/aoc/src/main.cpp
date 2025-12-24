@@ -6,18 +6,18 @@
 
 #include "day.hpp"
 #include "days/day00.hpp"
-// #include "day01/solution.hpp"
-// #include "day02/solution.hpp"
-// #include "day03/solution.hpp"
-// #include "day04/solution.hpp"
-// #include "day05/solution.hpp"
-// #include "day06/solution.hpp"
-// #include "day07/solution.hpp"
-// #include "day08/solution.hpp"
-// #include "day09/solution.hpp"
-// #include "day10/solution.hpp"
-// #include "day11/solution.hpp"
-// #include "day12/solution.hpp"
+//#include "days/day01.hpp"
+//#include "days/day02.hpp"
+//#include "days/day03.hpp"
+//#include "days/day04.hpp"
+//#include "days/day05.hpp"
+//#include "days/day06.hpp"
+//#include "days/day07.hpp"
+//#include "days/day08.hpp"
+//#include "days/day09.hpp"
+//#include "days/day10.hpp"
+//#include "days/day11.hpp"
+//#include "days/day12.hpp"
 
 const std::vector<aoc::DayBase*> days{
     new aoc::Day00(),
@@ -63,7 +63,7 @@ int main(int argc, const char* argv[])
     }
     try
     {
-        days[day_num]->solve(sample);
+        days[day_num]->Solve(sample);
     }
     catch (const std::exception& e)
     {

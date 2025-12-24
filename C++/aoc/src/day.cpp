@@ -30,7 +30,7 @@ namespace aoc
     {
     }
 
-    void DayBase::solve(bool sample)
+    void DayBase::Solve(bool sample)
     {
         // Get file name for day based on inputted day and whether to use sample.
         std::stringstream sstream;
@@ -47,7 +47,7 @@ namespace aoc
             throw std::runtime_error("Failed to open input file: " + input_path + ".");
 
         // Solve
-        parse_and_process(input_file);
+        ParseAndProcess(input_file);
         input_file.close();
     }
 }  // namespace aoc
