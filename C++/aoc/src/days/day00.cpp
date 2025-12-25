@@ -1,6 +1,6 @@
 #include "days/day00.hpp"
 
-#include <fstream>
+#include <istream>
 #include <stdexcept>
 
 #include "day.hpp"

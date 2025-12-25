@@ -10,5 +10,8 @@ Checks: >
   misc-*,
   -modernize-use-trailing-return-type,
   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
+  -cppcoreguidelines-avoid-magic-numbers,
   -performance-avoid-endl,
-  -readability-braces-around-statements
+  -readability-braces-around-statements,
+  -readability-identifier-length,
+  -readability-magic-numbers
