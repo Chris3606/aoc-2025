@@ -8,7 +8,7 @@
 #include "days/day00.hpp"
 #include "days/day01.hpp"
 #include "days/day02.hpp"
-// #include "days/day03.hpp"
+#include "days/day03.hpp"
 // #include "days/day04.hpp"
 // #include "days/day05.hpp"
 // #include "days/day06.hpp"
@@ -23,7 +23,7 @@ const std::vector<aoc::DayBase*> days{
     new aoc::Day00(),
     new aoc::Day01(),
     new aoc::Day02(),
-    // new aoc::Day03(),
+    new aoc::Day03(),
     // new aoc::Day04(),
     // new aoc::Day05(),
     // new aoc::Day06(),
