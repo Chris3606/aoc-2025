@@ -4,4 +4,6 @@
 !**/inputs/*_sample.txt
 **/.mypy_cache
 
-**/.vs/
+**/.vs/*
+!/.vs/
+!/.vs/launch.vs.json

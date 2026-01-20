@@ -7,18 +7,12 @@
       "binaryDir": "${sourceDir}/build",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_C_COMPILER": "clang-cl",
-        "CMAKE_CXX_COMPILER": "clang-cl"
-      },
-      "vendor": {
-        "microsoft.com/VisualStudioSettings/CMake/1.0": {
-          "intelliSenseMode": "windows-clang-x64"
-        }
+        "CMAKE_C_COMPILER": "clang-cl.exe",
+        "CMAKE_CXX_COMPILER": "clang-cl.exe"
       }
     },
     {
       "name": "common-debug",
-      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
       "hidden": true,
       "cacheVariables": {
@@ -27,7 +21,6 @@
     },
     {
       "name": "common-release",
-      "generator": "Ninja",
       "binaryDir": "${sourceDir}/build",
       "hidden": true,
       "cacheVariables": {
@@ -35,30 +28,108 @@
       }
     },
     {
-      "name": "Clang Debug",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
-      "inherits": [ "common-clang", "common-debug" ],
+      "name": "common-x86",
+      "hidden": true,
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-clang-x86"
+        }
+      },
+      "architecture": {
+        "strategy": "external",
+        "value": "x86"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER_TARGET": "i686-pc-windows-msvc",
+        "CMAKE_CXX_COMPILER_TARGET": "i686-pc-windows-msvc"
+      }
+    },
+    {
+      "name": "common-x64",
+      "hidden": true,
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "windows-clang-x64"
+        }
+      },
+      "architecture": {
+        "strategy": "external",
+        "value": "x64"
+      },
+      "cacheVariables": {
+        "CMAKE_C_COMPILER_TARGET": "x86_64-pc-windows-msvc",
+        "CMAKE_CXX_COMPILER_TARGET": "x86_64-pc-windows-msvc"
+      }
+    },
+    {
+      "name": "common-no-analyzers",
+      "hidden": true,
       "cacheVariables": {
         "CMAKE_C_CLANG_TIDY": "",
         "CMAKE_CXX_CLANG_TIDY": ""
       }
     },
     {
-      "name": "Clang Debug With Analyzers",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
-      "inherits": ["common-clang", "common-debug"],
+      "name": "common-analyzers",
+      "hidden": true,
       "cacheVariables": {
         "CMAKE_C_CLANG_TIDY": "clang-tidy",
         "CMAKE_CXX_CLANG_TIDY": "clang-tidy;--extra-arg=/EHsc"
       }
     },
     {
-      "name": "Clang Release",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
-      "inherits": ["common-clang", "common-release"]
+      "name": "Clang | Debug | x86",
+      "inherits": [
+        "common-clang",
+        "common-debug",
+        "common-x86",
+        "common-no-analyzers"
+      ]
+    },
+    {
+      "name": "Clang | Debug | x64",
+      "inherits": [
+        "common-clang",
+        "common-debug",
+        "common-x64",
+        "common-no-analyzers"
+      ]
+    },
+    {
+      "name": "Clang | Debug | x86 | Analyzers",
+      "inherits": [
+        "common-clang",
+        "common-debug",
+        "common-x86",
+        "common-analyzers"
+      ]
+    },
+    {
+      "name": "Clang | Debug | x64 | Analyzers",
+      "inherits": [
+        "common-clang",
+        "common-debug",
+        "common-x64",
+        "common-analyzers"
+      ]
+    },
+    {
+      "name": "Clang | Release | x86",
+      "inherits": [
+        "common-clang",
+        "common-release",
+        "common-x86",
+        "common-no-analyzers"
+      ]
+    },
+    {
+      "name": "Clang | Release | x64",
+      "inherits": [
+        "common-clang",
+        "common-release",
+        "common-x64",
+        "common-no-analyzers"
+      ]
     }
   ]
 }

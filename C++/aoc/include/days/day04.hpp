@@ -1,25 +1,20 @@
 #pragma once
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include "day.hpp"
+#include "utility/grid/vector_grid_view.hpp"
 
 namespace aoc
 {
-    class Day03 : public Day<std::vector<std::string>, long long>
+    class Day04 : public Day<std::vector<int>, std::string>
     {
         public:
-            Day03();
+            Day04();
 
         protected:
             virtual InputType ParseInput(std::istream& input_file) override final;
             virtual Solution1Type Part1(const InputType& input) override final;
             virtual Solution2Type Part2(const InputType& input) override final;
-
-        private:
-            static size_t IndexOfMaxDigit(const std::string_view& str);
-            static long long GetNumber(int num_digits, const std::string& battery_bank);
-            static long long OptimizeBatteries(const InputType& input, int num_digits);
     };
 }  // namespace aoc

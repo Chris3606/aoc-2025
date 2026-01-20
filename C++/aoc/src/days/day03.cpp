@@ -2,11 +2,12 @@
 
 #include <algorithm>
 #include <istream>
-#include <stdexcept>
+#include <numeric>
+#include <string>
+#include <string_view>
 
 #include "day.hpp"
 #include "utility/parsing.hpp"
-#include "utility/print_helpers.hpp"
 
 namespace aoc
 {
@@ -21,26 +22,21 @@ namespace aoc
 
     Day03::Solution1Type Day03::Part1(const InputType& input)
     {
-        long long sum = 0;
-        for (const auto& battery : input)
-        {
-            auto num = GetNumber(2, battery);
-            sum += num;
-        }
-
-        return sum;
+        return OptimizeBatteries(input, 2);
     }
 
-    Day03::Solution2Type Day03::Part2([[maybe_unused]] const InputType& input)
+    Day03::Solution2Type Day03::Part2(const InputType& input)
     {
-        long long sum = 0;
-        for (const auto& battery : input)
-        {
-            auto num = GetNumber(12, battery);
-            sum += num;
-        }
+        return OptimizeBatteries(input, 12);
+    }
 
-        return sum;
+    long long Day03::OptimizeBatteries(const InputType& input, int num_digits)
+    {
+        return std::accumulate(input.begin(),
+                               input.end(),
+                               0LL,
+                               [num_digits](long long acc, const std::string& battery)
+                               { return acc + Day03::GetNumber(num_digits, battery); });
     }
 
     long long Day03::GetNumber(int num_digits, const std::string& battery_bank)
@@ -59,11 +55,11 @@ namespace aoc
         {
             // Whatever we select, it has to leave at least this many digits left for the next iteration (minus 1), to
             // ensure we have enough digits to get to the proper number
-            int num_digits_remaining = num_digits - x;
+            const int num_digits_remaining = num_digits - x;
             auto eligible_digits = remaining.substr(0, (remaining.size() - num_digits_remaining) + 1);
 
             // Find the max digit and add it to our string
-            size_t max_digit_idx = Day03::IndexOfMaxDigit(eligible_digits);
+            const size_t max_digit_idx = Day03::IndexOfMaxDigit(eligible_digits);
             selected_digits.push_back(remaining[max_digit_idx]);
 
             // The next digit has to be after the current one, so shrink the remaining pool.

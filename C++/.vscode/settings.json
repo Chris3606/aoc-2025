@@ -3,5 +3,7 @@
     "cmake.useCMakePresets": "always",
     "cmake.automaticReconfigure": false,
     "cmake.configureOnOpen": false,
-    "cmake.configureOnEdit": false
+    "cmake.configureOnEdit": false,
+    "cmake.useVsDeveloperEnvironment": "always",
+    "cmake.deleteBuildDirOnCleanConfigure": true
 }

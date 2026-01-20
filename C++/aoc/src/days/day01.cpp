@@ -1,9 +1,6 @@
 #include "days/day01.hpp"
 
 #include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
 
 #include "day.hpp"
 #include "utility/math_helpers.hpp"
